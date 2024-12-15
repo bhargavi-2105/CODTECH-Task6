@@ -1,0 +1,78 @@
+#include<Servo.h>
+const int pingUltra=3;
+const int smokePin=A0;
+const int buzzerSm=4;
+const int temp=A1;
+const int fan=6;
+const int pirsen=10;
+const int pirmotor=9;
+const int pirbulb=7;
+int pir=0;
+int tempp=0;
+int smoke=0;
+Servo servo_5;
+void setup ( ) {
+  Serial.begin( 9600) ;
+  servo_5.attach(5);
+  pinMode(smokePin,INPUT);
+  pinMode(buzzerSm,OUTPUT);
+  pinMode(pir,INPUT);
+  pinMode(pirmotor,OUTPUT);
+  pinMode(pirbulb,OUTPUT);
+}
+void loop ( ) {
+  long duration, entrydist;
+  pinMode(pingUltra, OUTPUT) ;
+  digitalWrite(pingUltra, LOW);
+  delayMicroseconds( 2 ) ;
+  digitalWrite(pingUltra, HIGH) ;
+  delayMicroseconds( 5 ) ;
+  digitalWrite(pingUltra, LOW) ;
+  pinMode(pingUltra, INPUT) ;
+  duration = pulseIn(pingUltra, HIGH) ;
+  entrydist = microsecondsTocentimeters(duration);
+  //Serial.print("entrydist:");
+  //Serial.println(entrydist);
+  if (entrydist<30){
+    servo_5.write(90);
+    delay(20);
+	}
+  else{
+    servo_5.write(0);
+	}
+  //smoke=analogRead(smokePin);
+  //Serial.println(smoke);
+  if (smoke>=210){
+	  digitalWrite(buzzerSm,HIGH);
+  }
+  else{
+	  digitalWrite(buzzerSm,LOW);
+  }
+  tempp=(-40+0.488155*analogRead(temp)-20);
+  if (tempp>=30){
+  digitalWrite(fan,HIGH);
+  }
+  else{
+  digitalWrite(fan,LOW);
+  }
+  pir=digitalRead(pirsen);
+  if(pir==HIGH){
+    digitalWrite(pirmotor,HIGH);
+    digitalWrite(pirbulb,HIGH);
+  }
+  else{
+    digitalWrite(pirmotor,LOW);
+    digitalWrite(pirbulb,LOW);
+  }
+  Serial.print("Dis:");
+  Serial.println(entrydist);
+  Serial.print("smoke:");
+  Serial.println(smoke);
+  Serial.print("Temp:");
+  Serial.println(temp);
+  Serial.print("dete");
+  Serial.println(pir);
+  Serial.println("---------");
+}
+  long microsecondsTocentimeters(long microseconds) {
+  return microseconds/29/2; }
